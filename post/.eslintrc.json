@@ -1,0 +1,29 @@
+{
+  "root": true,
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": ["xo"],
+  "plugins": ["eslint-plugin-prettier"],
+  "overrides": [
+    {
+      "extends": ["xo-typescript", "prettier"],
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/consistent-type-imports": "off",
+        "@typescript-eslint/ban-tslint-comment": "off",
+        "@typescript-eslint/no-namespace": "off",
+        "prettier/prettier": "error"
+      }
+    }
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "new-cap": "off"
+  }
+}

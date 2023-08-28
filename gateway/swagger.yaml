@@ -1,0 +1,267 @@
+openapi: 3.0.3
+info:
+  title: Swagger Microservices - OpenAPI 3.0
+  description: |-
+    Este é o swagger para o microserviço desenvolvido no teste.
+
+    _Vários microserviços foram desenvolvidos, e a documentação de cada um estará incluída!_
+  contact:
+    email: ruanrafaelleite@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit-0/
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: Health
+    description: Verifica o status dos serviços que estão rodando.
+  - name: Auth
+    description: Operações relacionadas a autenticação do usuário.
+  - name: Product
+    description: Tudo sobre os produtos na plataforma.
+paths:
+  /auth:
+    post:
+      tags: 
+        - Auth
+      summary: Autentica o usuário na plataforma
+      description: Momentaneamente apenas usuário admin com a senha admin é aceito.
+      operationId: authenticate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  example: admin
+      responses:
+        '200':
+          description: Autenticação realizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authenticateResponse' 
+        '401':
+          description: usuário ou senha incorretos
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Verifica o status da plataforma.
+      description: Verifica se a plataforma está funcionando corretamente. Além disso, verifica também os outros microserviços necessários para o funcionamento de todo o sistema.
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Verificação realizada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'          
+  /product:
+    get:
+      tags:
+        - Product
+      summary: Busca por todos os produtos da plataforma.
+      description: Filtros e paginação não implementados.
+      operationId: findProducts
+      responses:
+        '200':
+          description: sucesso ao buscar produtos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      security:
+        - bearer: []
+      tags: 
+        - Product
+      summary: Cria um novo produto na plataforma
+      operationId: createProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductAssert'
+      responses:
+        '200':
+          description: produto criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: preço invalido ou ausência de nome
+  /product/{id}:
+    get:
+      tags:
+        - Product
+      summary: Busca o produto por Id
+      operationId: findProductById
+      parameters:
+        - name: id
+          in: path
+          description: ProductId
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Produto encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Product'          
+        '404':
+          description: Produto não encontrado
+        '400':
+          description: Id passado não corresponde a um ObjectId
+    put:
+      security:
+        - bearer: []
+      tags:
+        - Product
+      summary: Atualiza um produto existente
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          description: ProductId
+          required: true
+          explode: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductAssert'
+      responses:
+        '200':
+          description: produto atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: preço ou id invalido
+        '404':
+          description: produto não encontrado
+    delete:
+      security:
+        - bearer: []
+      tags:
+          - Product
+      summary: Remove um produto existente
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          description: ProductId
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: produto removido com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: preço ou id invalido
+        '404':
+          description: produto não encontrado
+          
+      
+  /joke:
+    get:
+      tags:
+        - Joke
+      summary: Gera uma piada aleatoria
+      operationId: getJoke
+      responses:
+        '200':
+          description: Piada foi gerada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Joke'
+components:
+  schemas:
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+          enum:
+            - ok
+            - warning
+        message:
+          type: string
+          example: All services are up
+    Product: 
+      type: object
+      properties:
+        id:
+          type: string
+          example: 507f191e810c19729de860ea
+        name:
+          type: string
+          example: teclado
+        description: 
+          type: string
+          example: teclado mecânico com luzes RGB.
+        price:
+          type: number
+          example: 880.90
+        updatedAt:
+          type: string
+          example: 2023-08-28T05:17:53
+        createdAt:
+          type: string
+          example: 2023-08-28T05:17:53
+    ProductAssert:
+      type: object
+      properties:
+        name:
+          type: string
+          example: teclado
+        description:
+          type: string
+          example: teclado mecânico muito bom
+        price:
+          type: number
+          example: 880.80
+    Joke:
+      type: object
+      properties:
+        joke:
+          type: string
+          example: A strange-but-true phenomenon - whenever there is a natural disaster in the world, Chuck Norris' stocks soar.
+    authenticateResponse:
+        type: object
+        properties:
+          status:
+            type: string
+            example: ok
+          data:
+            type: string
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,8 @@
+.vscode
+dist
+node_modules
+.editorconfig
+.eslintrc.json
+.gitignore
+.prettierrc.json
+.env

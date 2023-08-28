@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  gateway:
+    build:
+      context: ./gateway
+    ports:
+      - "80:80"
+    environment:
+      - PORT=80
+      - PRODUCT_SERVICE_URL=http://post/
+      - JOKE_SERVICE_URL=http://joke/
+      - JWT_SECRET=${JWT_SECRET}
+
+  post:
+    build:
+      context: ./post
+    environment:
+      - PORT=80
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=mongodb+srv://uol:database:uol@uol.mifpbtn.mongodb.net/product?retryWrites=true&w=majority
+
+  joke:
+    build:
+      context: ./joke
+    environment:
+      - PORT=80
+      - JOKE_API_PROVIDER=https://api.chucknorris.io/jokes
